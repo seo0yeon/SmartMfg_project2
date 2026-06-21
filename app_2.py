@@ -14,7 +14,7 @@ from scipy import stats as sstats
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-st.set_page_config(page_title="공정능력 및 SPC 분석 ", page_icon="📊", layout="wide")
+st.set_page_config(page_title="공정능력 · SPC 분석 대시보드", page_icon="📊", layout="wide")
 
 
 # =====================================================================
@@ -753,7 +753,17 @@ with st.sidebar:
     else:  # 직접 입력
         st.caption("쉼표(,)로 구분된 데이터를 입력하세요. 첫 행은 헤더입니다.")
         default_text = (
-            "subgroup,value\nline_1,3576.27\nline_1,3504.17\nline_1,3440.11\nline_2,3630.12\nline_2,3514.52\nline_2,3494.35"
+            # 일부러 우측으로 치우친(비정규) 데이터를 기본값으로 넣어, 정규성 불만족 -> Box-Cox 변환 화면이
+            # 사용자가 아무것도 안 해도 바로 보이도록 함
+            "subgroup,value\n"
+            "g1,7.398\ng1,9.962\ng1,5.617\ng1,3.033\ng1,4.690\n"
+            "g2,2.741\ng2,7.847\ng2,28.225\ng2,4.517\ng2,3.973\n"
+            "g3,12.059\ng3,10.558\ng3,8.211\ng3,2.914\ng3,7.176\n"
+            "g4,14.810\ng4,1.927\ng4,4.676\ng4,1.104\ng4,2.035\n"
+            "g5,1.171\ng5,5.841\ng5,2.080\ng5,9.692\ng5,8.643\n"
+            "g6,6.129\ng6,0.596\ng6,4.312\ng6,7.039\ng6,8.276\n"
+            "g7,1.600\ng7,4.583\ng7,2.777\ng7,3.291\ng7,21.347\n"
+            "g8,3.295\ng8,7.153\ng8,17.893\ng8,4.122\ng8,6.608"
             if not is_count else
             "lot,sample_size,count\n1,300,8\n2,300,16\n3,300,13\n4,300,6\n5,300,8"
         )
@@ -762,6 +772,10 @@ with st.sidebar:
             df = pd.read_csv(StringIO(text))
         except Exception as e:
             st.error(f"데이터 형식을 확인해주세요: {e}")
+
+        # 위 기본 데이터(0.5~28 범위)에 맞춘 규격 기본값. 사용자가 직접 값을 입력하면 그 값이 우선됨.
+        if not is_count and USL is None and LSL is None:
+            USL, LSL = 30.0, 0.0
 
     if df is not None and data_mode != "샘플 데이터":
         st.markdown("##### 3 · 컬럼 매핑")
