@@ -1,7 +1,5 @@
 """
 공정능력분석 & 통계적공정관리(SPC) 대시보드
-산업공학 과제 - 강의록(공정능력분석, 통계적공정관리) 기반 단일 파일 Streamlit 앱
-
 실행 방법: streamlit run app.py
 """
 import streamlit as st
@@ -1013,6 +1011,15 @@ else:
     has_sample = sample_col is not None
     sample_equal = has_sample and df_work[sample_col].nunique() == 1
     recommended = "C" if not has_sample else ("NP" if sample_equal else "P")
+
+    st.markdown(
+        '<div class="notice-warn">📌 계수형(불량/결점) 데이터에는 통계적공정관리(SPC) 관리도만 제공합니다. '
+        'Cp/Cpk/Pp/Ppk 같은 공정능력지수는 데이터가 정규분포를 따른다는 가정 위에서 계산되는데, '
+        '불량개수나 결점수는 이항분포·포아송분포를 따르는 이산형 데이터라 공정능력지수가 통계적으로 적용되지 않습니다. '
+        '대신 NP/P/C/U 관리도로 공정의 안정성을 판단합니다.</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown("")
 
     col1, col2 = st.columns([2, 1])
     with col1:
